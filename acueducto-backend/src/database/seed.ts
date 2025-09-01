@@ -26,13 +26,13 @@ async function seed() {
     {
       title: 'Laptop',
       brand: 'OsoTech',
-      description: 'Laptop poderosa para gaming',
+      description: 'Laptop poderosa para gaming oso',
       price: 1200,
     },
     {
       title: 'Phone',
       brand: 'Samsung',
-      description: 'El mejor radar para detectar nivel de batería',
+      description: 'El mejor radar para detectar nivel de batería abba',
       price: 800,
     },
     {
