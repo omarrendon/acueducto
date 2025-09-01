@@ -1,5 +1,4 @@
 version: "3.9"
-
 services:
   postgres:
     image: postgres:15-alpine
@@ -12,29 +11,44 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
 
   backend:
-    build: ./acueducto-backend
+    build:
+      context: ./acueducto-backend
     container_name: acueducto-backend
     restart: always
-    env_file:
-      - ./acueducto-backend/.env
-    ports:
-      - "3001:3001"
     depends_on:
       - postgres
-
-  frontend:
-    build: ./acueducto-frontend
-    container_name: acueducto-frontend
-    restart: always
     environment:
-      - NEXT_PUBLIC_BACKEND_URL=http://localhost:3001
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: nestuser
+      DB_PASS: nestpass
+      DB_NAME: nestdb
+    command: >
+      sh -c "
+        ./wait-for-it.sh postgres:5432 -- 
+        npm run start:dev
+      "
+    volumes:
+      - ./acueducto-backend:/usr/src/app
     ports:
       - "3000:3000"
+  frontend:
+    build:
+      context: ./acueducto-frontend
+    container_name: acueducto-frontend
+    restart: always
     depends_on:
       - backend
+    environment:
+      NEXT_PUBLIC_API_URL: http://backend:3000
+    volumes:
+      - ./acueducto-frontend:/usr/src/app
+    ports:
+      - "3001:3000"
+    command: npm run dev
 
 volumes:
-  pgdata:
+  postgres_data:
